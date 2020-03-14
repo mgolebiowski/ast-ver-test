@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 
 const siteList = [
     'aftenposten.no',
+    ['aftenposten articles', 'aftenposten.no/i/xPvzml/'],
     'bt.no',
     'vg.no',
     'vgd.no',
@@ -9,14 +10,17 @@ const siteList = [
     'tek.no'
 ];
 
+const arrayCheck = val => typeof val.sort === 'function';
+
 async function main () {
     const browser = await puppeteer.launch();
 
-    const resultsPromise = siteList.map(async url => {
+    const resultsPromise = siteList.map(async site => {
+        const [name, url] = arrayCheck(site) ? [site[0], site[1]] : [site, site];
         const page = await browser.newPage();
         await page.goto(`https://${url}`);
 
-        return [url, await page.evaluate('apntag.getAstVersion()')];
+        return [name, await page.evaluate('apntag.getAstVersion()')];
     });
     
     const results = await Promise.all(resultsPromise);
