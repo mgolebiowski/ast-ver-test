@@ -1,39 +1,39 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
 
 const siteList = [
-    'aftenposten.no',
-    ['aftenposten articles', 'aftenposten.no/i/xPvzml/'],
-    'bt.no',
-    'vg.no',
-    'vgd.no',
-    'vglive.no',
-    'tek.no'
+  "aftenposten.no",
+  ["aftenposten articles", "aftenposten.no/i/xPvzml/"],
+  "bt.no",
+  "vg.no",
+  "vgd.no",
+  "vglive.no",
+  "tek.no"
 ];
 
-const arrayCheck = val => typeof val.sort === 'function';
+const arrayCheck = val => typeof val.sort === "function";
 
-async function main () {
-    const browser = await puppeteer.launch();
+async function main() {
+  const browser = await puppeteer.launch();
 
-    const resultsPromise = siteList.map(async site => {
-        const [name, url] = arrayCheck(site) ? [site[0], site[1]] : [site, site];
-        const page = await browser.newPage();
-        await page.goto(`https://${url}`);
+  const resultsPromise = siteList.map(async site => {
+    const [name, url] = arrayCheck(site) ? [site[0], site[1]] : [site, site];
+    const page = await browser.newPage();
+    await page.goto(`https://${url}`);
 
-        return [name, await page.evaluate('apntag.getAstVersion()')];
-    });
-    
-    const results = await Promise.all(resultsPromise);
+    return [name, await page.evaluate("apntag.getAstVersion()")];
+  });
 
-    await browser.close();
+  const results = await Promise.all(resultsPromise);
 
-    const sortedSites = results.sort((a, b) => a[1] >= b[1] ? 1 : -1);
+  await browser.close();
 
-    console.table(sortedSites);
+  const sortedSites = results.sort((a, b) => (a[1] >= b[1] ? 1 : -1));
+
+  console.table(sortedSites);
 }
 
 try {
-    main();
+  main();
 } catch (e) {
-    console.error(e);
+  console.error(e);
 }
